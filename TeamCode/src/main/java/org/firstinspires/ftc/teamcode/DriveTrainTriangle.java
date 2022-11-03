@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class DriveTrainTriangle extends Module{
+public class DriveTrainTriangle extends org.firstinspires.ftc.teamcode.modules.Module {
     private DcMotor motor_left_back, motor_forward, motor_right_back, lift, intake, turner;
     public DriveTrainTriangle (){
 

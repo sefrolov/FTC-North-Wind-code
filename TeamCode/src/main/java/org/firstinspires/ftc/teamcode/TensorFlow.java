@@ -32,25 +32,33 @@ package org.firstinspires.ftc.robotcontroller.external.samples;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.internal.vuforia.VuforiaLocalizerImpl;
+import org.firstinspires.ftc.teamcode.tfrec.Detector;
+import org.firstinspires.ftc.teamcode.tfrec.classification.Classifier;
 
 /**
  * This 2022-2023 OpMode illustrates the basics of using the TensorFlow Object Detection API to
  * determine which image is being presented to the robot.
  *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  *
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "Concept: TensorFlow Object Detection", group = "Concept")
-public class ConceptTensorFlowObjectDetection extends LinearOpMode {
+@TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
+
+public class TensorFlow {
 
     /*
      * Specify the source for the Tensor Flow Model.
@@ -59,16 +67,29 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
+    Telemetry telemetry;
+    private Detector tfDetector = null;
+    private HardwareMap hardwareMap;
+    private String modelFileName = "model_unquant.tflite";//"croppedRingRec.tflite";
+    private String labelFileName = "labels.txt";//"croppedLabels.txt";
+    private static Classifier.Model MODEl_TYPE = Classifier.Model.FLOAT_EFFICIENTNET;
+    private static final String LABEL_A = "A";
+    private static final String LABEL_B = "B";
+    private static final String LABEL_C = "C";
+
+    private String result = LABEL_B; //just a default value.
+    private LinearOpMode caller = null;
+    private boolean isRunning = true;
+
+
     private static final String TFOD_MODEL_ASSET = "model_unquant.tflite";
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
-    private static final String LABELS = "labels.txt";
-
-    /*private static final String[] LABELS = {
-      "0 A",
+    //private static final String LABELS = "labels.txt";
+    private static final String[] LABELS = {
+            "0 A",
             "1 B",
-              "2 C"
-    };*/
-
+            "2 C"
+    };
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -97,7 +118,86 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
-    @Override
+    public TensorFlow(HardwareMap hMap, LinearOpMode caller, Telemetry t)/* throws Exception */{
+        hardwareMap = hMap;
+        telemetry = t;
+        initDetector();
+        activateDetector();
+        this.caller = caller;
+
+    }
+
+    public TensorFlow(HardwareMap hMap, LinearOpMode caller, Telemetry t, String model, String labels)/* throws Exception */{
+        hardwareMap = hMap;
+        telemetry = t;
+        setModelFileName(model);
+        setLabelFileName(labels);
+        initDetector();
+        activateDetector();
+        this.caller = caller;
+    }
+
+    public void initDetector()/* throws Exception */{
+        tfDetector = new Detector(MODEl_TYPE, getModelFileName(), getLabelFileName(), hardwareMap.appContext, telemetry);
+    }
+
+    protected void activateDetector()/* throws Exception */{
+        if (tfDetector != null) {
+            tfDetector.activate();
+        }
+        telemetry.addData("Info", "TF Activated");
+    }
+
+    public String getModelFileName() {
+        return modelFileName;
+    }
+
+    public void setModelFileName(String modelFileName) {
+        this.modelFileName = modelFileName;
+    }
+
+    public String getLabelFileName() {
+        return labelFileName;
+    }
+
+    public void setLabelFileName(String labelFileName) {
+        this.labelFileName = labelFileName;
+    }
+
+    public void detectRingThread() {
+        //ElapsedTime runtime = new ElapsedTime();
+        //runtime.reset();
+        while (isRunning && caller.opModeIsActive()) {
+            result = LABEL_B;
+            if (tfDetector != null) {
+                List<Classifier.Recognition> results = tfDetector.getLastResults();
+                if (results == null || results.size() == 0) {
+                    telemetry.addData("Nada", "No results");
+                } else {
+                    for (Classifier.Recognition r : results) {
+                        telemetry.addData(r.getTitle(), r.getConfidence() * 100);
+                    }
+                    for (Classifier.Recognition r : results) {
+                        if (r.getConfidence() >= 0.8) {
+                            //telemetry.addData("PrintZone", r.getTitle());
+                            if (r.getTitle().contains(LABEL_C)) {
+                                this.result = LABEL_C;
+                            } else if (r.getTitle().contains(LABEL_B)) {
+                                this.result = LABEL_B;
+                            } else if (r.getTitle().contains(LABEL_A)) {
+                                this.result = LABEL_A;
+                            }
+                        }
+                    }
+                }
+            }
+            telemetry.addData("PrintZone", result);
+            telemetry.update();
+        }
+    }
+
+
+    /*@Override
     public void runOpMode() {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
@@ -107,7 +207,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
          * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
-         **/
+         **//*
         if (tfod != null) {
             tfod.activate();
 
@@ -120,7 +220,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             tfod.setZoom(1.0, 16.0/9.0);
         }
 
-        /** Wait for the game to begin */
+        /** Wait for the game to begin *//*
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
         waitForStart();
@@ -152,7 +252,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                 }
             }
         }
-    }
+    }*/
 
     /**
      * Initialize the Vuforia localization engine.
@@ -161,12 +261,16 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CameraDirection.BACK;
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(/*"cameraMonitorViewId"*/"Webcam 1", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        parameters.vuforiaLicenseKey = "AaF9H1n/////AAABmabQscXArEAiiWNlpiWUdjJvARlxhvHwuotHcq1BmBZUii5ot+91xY1cYV9EcTvQGa5mYOzOewWVwrpVK4fMrQo+TK6qNGDKcUXjzHpNhiPE3rVkmZChsNIJd7Ed+ABuYIacAYh8DBkr8idnsPh0V2AukxW+u1Leqgvos9FEFT6x8STzJjeIuZW/b9Bp93TPvrd1eG0YNTwMcwU0qjHzafyzRnrRpoexT9o5AVznqkdAo+t36/E6VUrfTU0MVH47zI84euLah7GKazGCSUme9p6tCq3fPgLbQh0F8WZH6KUYQzoRhOWXSVbbv1YetAIx0Yb/4EJqtwCJzjnIjBrGEq5FRVXRiYEsyxyGJgUHmOD7";
+        parameters.useExtendedTracking = false;
         //  Instantiate the Vuforia engine
+        //vuforia = new VuforiaLocalizerImpl(parameters);
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
     }
 

@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class DriveTrainRomb extends Module {
+public class DriveTrainRomb extends org.firstinspires.ftc.teamcode.modules.Module {
     private DcMotor rf, rr, lf, lr;
     private static double diffAngle = 45;
 
