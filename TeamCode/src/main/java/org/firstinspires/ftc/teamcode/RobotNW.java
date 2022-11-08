@@ -27,4 +27,8 @@ public class RobotNW {
         timer.reset();
         while(timer.milliseconds() < time);
     }
+
+    public vec2 getPos() {
+        return WB.getPos(IMU.getAngle());
+    }
 }

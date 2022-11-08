@@ -4,13 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "MainTele")
-public class AutoTest extends LinearOpMode {
+public class MainTele extends LinearOpMode {
     RobotNW Robot = new RobotNW();
+    double[] basePos = {0, 0, 0, 0};
 
     public void runOpMode() {
         Robot.init(hardwareMap, telemetry, this);
         telemetry.addData("", "Init complited");
         telemetry.update();
+        basePos = Robot.WB.getEncoders();
 
         waitForStart();
 
@@ -36,11 +38,14 @@ public class AutoTest extends LinearOpMode {
                 Robot.servo.setPosition(0.8 - gamepad2.right_trigger * 0.8);
             }
 
-            telemetry.addData("Angle", Robot.IMU.getPositiveAngle());
-            telemetry.addData("lb", Robot.WB.MotorLB.getCurrentPosition());
-            telemetry.addData("lf", Robot.WB.MotorLF.getCurrentPosition());
-            telemetry.addData("rf", Robot.WB.MotorRF. getCurrentPosition());
-            telemetry.addData("rb", Robot.WB.MotorRB.getCurrentPosition());
+            telemetry.addData("Positive Angle", Robot.IMU.getPositiveAngle());
+            telemetry.addData("Angle", Robot.IMU.getAngle());
+            telemetry.addData("lb", Robot.WB.MotorLB.getCurrentPosition() - basePos[0]);
+            telemetry.addData("lf", Robot.WB.MotorLF.getCurrentPosition() - basePos[1]);
+            telemetry.addData("rf", Robot.WB.MotorRF.getCurrentPosition() - basePos[2]);
+            telemetry.addData("rb", Robot.WB.MotorRB.getCurrentPosition() - basePos[3]);
+            telemetry.addData("Pos X", Robot.getPos().X);
+            telemetry.addData("Pos Y", Robot.getPos().Y);
             telemetry.update();
         }
 
