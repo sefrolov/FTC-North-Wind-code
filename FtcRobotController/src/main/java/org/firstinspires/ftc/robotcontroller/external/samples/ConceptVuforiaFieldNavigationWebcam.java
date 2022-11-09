@@ -92,7 +92,7 @@ public class ConceptVuforiaFieldNavigationWebcam extends LinearOpMode {
      * and paste it in to your code on the next line, between the double quotes.
      */
     private static final String VUFORIA_KEY =
-            "AaF9H1n/////AAABmabQscXArEAiiWNlpiWUdjJvARlxhvHwuotHcq1BmBZUii5ot+91xY1cYV9EcTvQGa5mYOzOewWVwrpVK4fMrQo+TK6qNGDKcUXjzHpNhiPE3rVkmZChsNIJd7Ed+ABuYIacAYh8DBkr8idnsPh0V2AukxW+u1Leqgvos9FEFT6x8STzJjeIuZW/b9Bp93TPvrd1eG0YNTwMcwU0qjHzafyzRnrRpoexT9o5AVznqkdAo+t36/E6VUrfTU0MVH47zI84euLah7GKazGCSUme9p6tCq3fPgLbQh0F8WZH6KUYQzoRhOWXSVbbv1YetAIx0Yb/4EJqtwCJzjnIjBrGEq5FRVXRiYEsyxyGJgUHmOD7";
+            " --- YOUR NEW VUFORIA KEY GOES HERE  --- ";
 
     // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
     // We will define some constants and conversions here
@@ -137,7 +137,7 @@ public class ConceptVuforiaFieldNavigationWebcam extends LinearOpMode {
 
         // Load the data sets for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
-        targets = this.vuforia.loadTrackablesFromAsset("team-sleeve");
+        targets = this.vuforia.loadTrackablesFromAsset("PowerPlay");
 
         // For convenience, gather together all the trackable objects in one easily-iterable collection */
         List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
@@ -162,9 +162,10 @@ public class ConceptVuforiaFieldNavigationWebcam extends LinearOpMode {
          */
 
         // Name and locate each trackable object
-        identifyTarget(0, "yellow_triangle",   -halfField,  -oneAndHalfTile, mmTargetHeight, 90, 0,  90);
-        identifyTarget(1, "green_sq",        halfField,  -oneAndHalfTile, mmTargetHeight, 90, 0, -90);
-        identifyTarget(2, "cian_circle",  -halfField,   oneAndHalfTile, mmTargetHeight, 90, 0,  90);
+        identifyTarget(0, "Red Audience Wall",   -halfField,  -oneAndHalfTile, mmTargetHeight, 90, 0,  90);
+        identifyTarget(1, "Red Rear Wall",        halfField,  -oneAndHalfTile, mmTargetHeight, 90, 0, -90);
+        identifyTarget(2, "Blue Audience Wall",  -halfField,   oneAndHalfTile, mmTargetHeight, 90, 0,  90);
+        identifyTarget(3, "Blue Rear Wall",       halfField,   oneAndHalfTile, mmTargetHeight, 90, 0, -90);
 
         /*
          * Create a transformation matrix describing where the camera is on the robot.
@@ -239,13 +240,13 @@ public class ConceptVuforiaFieldNavigationWebcam extends LinearOpMode {
             // Provide feedback as to where the robot is located (if we know).
             if (targetVisible) {
                 // express position (translation) of robot in inches.
-                /*VectorF translation = lastLocation.getTranslation();
+                VectorF translation = lastLocation.getTranslation();
                 telemetry.addData("Pos (inches)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                         translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
 
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-                telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);*/
+                telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
             }
             else {
                 telemetry.addData("Visible Target", "none");

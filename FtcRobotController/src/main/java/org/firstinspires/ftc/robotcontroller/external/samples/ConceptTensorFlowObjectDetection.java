@@ -60,16 +60,14 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
-    private static final String TFOD_MODEL_ASSET = "model_unquant.tflite";
+    private static final String TFOD_MODEL_ASSET = "PowerPlay.tflite";
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
-    private static final String LABELS = "labels.txt";
 
-    /*private static final String[] LABELS = {
-      "0 A",
-            "1 B",
-              "2 C"
-    };*/
-
+    private static final String[] LABELS = {
+      "1 Bolt",
+      "2 Bulb",
+      "3 Panel"
+    };
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -84,7 +82,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
      * and paste it in to your code on the next line, between the double quotes.
      */
     private static final String VUFORIA_KEY =
-            "AaF9H1n/////AAABmabQscXArEAiiWNlpiWUdjJvARlxhvHwuotHcq1BmBZUii5ot+91xY1cYV9EcTvQGa5mYOzOewWVwrpVK4fMrQo+TK6qNGDKcUXjzHpNhiPE3rVkmZChsNIJd7Ed+ABuYIacAYh8DBkr8idnsPh0V2AukxW+u1Leqgvos9FEFT6x8STzJjeIuZW/b9Bp93TPvrd1eG0YNTwMcwU0qjHzafyzRnrRpoexT9o5AVznqkdAo+t36/E6VUrfTU0MVH47zI84euLah7GKazGCSUme9p6tCq3fPgLbQh0F8WZH6KUYQzoRhOWXSVbbv1YetAIx0Yb/4EJqtwCJzjnIjBrGEq5FRVXRiYEsyxyGJgUHmOD7";
+            " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
