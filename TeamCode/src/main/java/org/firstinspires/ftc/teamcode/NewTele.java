@@ -84,13 +84,13 @@ public class NewTele extends LinearOpMode {
             } else {
                 new_thread.EL.Apply_Speed_for_Elevator(y_el);
 
-                if (gamepad2.right_trigger > 0.1) {
+                if (gamepad2.right_bumper) {
                     if (Robot.servo.getPosition() < 0.9) {
                         telemetry.addData("!", "!");
                         led_flag = 2;
                     }
                     Robot.servo.setPosition(1.);
-                } else if (gamepad2.left_trigger > 0.1) {
+                } else if (gamepad2.left_bumper) {
                     Robot.servo.setPosition(0.8);
                     sensor_sleep.reset();
                 } else if (gamepad2.a) {
@@ -113,12 +113,12 @@ public class NewTele extends LinearOpMode {
                         new_thread.EL.Elevator.setPower(-1);
                     }
                     new_thread.EL.Elevator.setPower(0);
-                } else if (gamepad2.right_trigger > 0.1) {
+                } /*else if (gamepad2.right_trigger > 0.1) {
                     Robot.servo.setPosition(0.8 - gamepad2.right_trigger * 0.8);
                 } else if (Robot.servo.getPosition() < 0.9 && Robot.sensor.getVoltage() > 1 && sensor_sleep.milliseconds() > 500) {
                     Robot.servo.setPosition(1.);
                     led_flag = 2;
-                }
+                }*/
                 last_sen = (Robot.sensor.getVoltage() > 1);
 
                 if (abs(y_el) > 0.05) new_thread.EL.Apply_Speed_for_Elevator(y_el);
