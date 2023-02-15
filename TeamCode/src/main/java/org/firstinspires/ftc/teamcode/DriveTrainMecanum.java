@@ -32,8 +32,8 @@ public class DriveTrainMecanum {
         MotorLF = HM.get(DcMotor.class, "motor_lf");
         MotorRF = HM.get(DcMotor.class, "motor_rf");
 
-        MotorLB.setDirection(DcMotorSimple.Direction.REVERSE);
-        MotorLF.setDirection(DcMotorSimple.Direction.REVERSE);
+        MotorRB.setDirection(DcMotorSimple.Direction.REVERSE);
+        MotorRF.setDirection(DcMotorSimple.Direction.REVERSE);
 
         MotorLB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         MotorRB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -49,7 +49,6 @@ public class DriveTrainMecanum {
         MotorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         MotorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         MotorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
 
         basePos = getEncoders();
     }

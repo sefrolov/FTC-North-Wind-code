@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 public class imu_sensor {
-    static double startAng;
+    static double startAng = 0;
     private double ang, positiveAng;
     BNO055IMU imu;
     Orientation angles = new Orientation();
