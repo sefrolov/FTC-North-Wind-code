@@ -79,7 +79,7 @@ public class MainTele extends LinearOpMode {
                         led_flag = 2;
                     }
                     Robot.servo.setPosition(1);
-                   while (new_thread.EL.Elevator.getCurrentPosition() >= 0) {
+                    while (new_thread.EL.Elevator.getCurrentPosition() >= 0) {
                         new_thread.EL.Elevator.setPower(-1);
                     }
                     new_thread.EL.Elevator.setPower(0);
@@ -106,7 +106,7 @@ public class MainTele extends LinearOpMode {
                     else if (Robot.timer.milliseconds() < 350) Robot.LED.setPower(0);
                     led_flag = 1;
                 }
-                 if (gamepad2.dpad_down) {
+                if (gamepad2.dpad_down) {
                     //y_ch = 0.1;
                     new_thread.EL.changeover.setPosition(0.16);
                 } else if (gamepad2.dpad_up) {
@@ -121,14 +121,14 @@ public class MainTele extends LinearOpMode {
                         new_thread.EL.changeover.setPosition(0.16);
                     }
                 }
-            telemetry.addData("Positive Angle", Robot.IMU.getPositiveAngle());
-            telemetry.addData("Angle", Robot.IMU.getAngle());
+                telemetry.addData("Positive Angle", Robot.IMU.getPositiveAngle());
+                telemetry.addData("Angle", Robot.IMU.getAngle());
                 telemetry.addData("lb", Robot.WB.MotorLB.getCurrentPosition() - basePos[0]);
                 telemetry.addData("lf", Robot.WB.MotorLF.getCurrentPosition() - basePos[1]);
                 telemetry.addData("rf", Robot.WB.MotorRF.getCurrentPosition() - basePos[2]);
                 telemetry.addData("rb", Robot.WB.MotorRB.getCurrentPosition() - basePos[3]);
                 telemetry.addData("elevator", Robot.EL.Elevator.getCurrentPosition());
-                telemetry.addData("elevator1", y_el);
+                //telemetry.addData("elevator1", y_el);
             /*telemetry.addData("Pos X", Robot.getPos().X);
             telemetry.addData("Pos Y", Robot.getPos().Y);*/
                 telemetry.addData("led_flag", led_flag);
@@ -146,3 +146,4 @@ public class MainTele extends LinearOpMode {
         }
     }
 }
+

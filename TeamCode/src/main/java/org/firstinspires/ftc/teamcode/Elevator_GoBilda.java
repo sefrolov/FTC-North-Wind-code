@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gam
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,14 +15,15 @@ public class Elevator_GoBilda {
     double TICS_PER_REV = 384.5;
     DcMotor Elevator;
     Servo changeover;
-    int CurAng, TargetAng, LastErAng, ErAng;
-    double p_coef = 0.1, d_coef = 0, p, d;
+    int CurAng, TargetAng, LastErAng, ErAng, startPos;
+    double p_coef = 0.013, d_coef = 0.05, p, d;
 
     public void initElevator(HardwareMap HM) {
         Elevator = HM.get(DcMotor.class, "elevator");
         changeover = HM.get(Servo.class, "changeover");
         Elevator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         Elevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        startPos = Elevator.getCurrentPosition();
     }
 
     public void Apply_Speed_for_Elevator(double y_elevator) {
@@ -49,9 +51,12 @@ public class Elevator_GoBilda {
         }
     }
 
-    public int getPos(){return Elevator.getCurrentPosition();}
+    public int getPos(){return Elevator.getCurrentPosition() - startPos;}
 
-    public void addTargetAng(int Ang) {TargetAng += Ang;}
+    public void addTargetAng(int Ang) {
+        TargetAng += Ang;
+        TargetAng = min(max(-100, TargetAng), 2150);
+    }
 
     public int getTargetAng() { return TargetAng; }
 
@@ -63,7 +68,7 @@ public class Elevator_GoBilda {
         p = ErAng * p_coef;
         d = (ErAng - LastErAng) * d_coef;
 
-        Elevator.setPower(max(p + d, -0.2));
+        Elevator.setPower(max(p + d, -0.6));
         LastErAng = ErAng;
     }
 }
@@ -165,7 +170,7 @@ class elevatorNewThreadMiddle extends Thread {
     public void run() {
         //EL.initElevator(HM);
         while (!isInterrupted()) {
-            //EL.Lift_PID_controller();
+            EL.Lift_PID_controller();
             /*if (launch) {
                 EL.Elevator.setPower(1);
                 //EL.changeover.setPosition(0.33); //???
@@ -236,14 +241,14 @@ class elevatorNewThreadMiddle extends Thread {
             }*/
 
 
-            if (change_flag && change_timer.milliseconds() > change_time){
+            if (change_flag && change_timer.milliseconds() > change_time && getPos() > 800){
                 if (EL.changeover.getPosition() > 0.5) EL.changeover.setPosition(0.16);
                 else EL.changeover.setPosition(0.96);
                 change_flag = false;
             }
 
             if (lift_flag && lift_timer.milliseconds() > lift_time){
-                EL.Elevator.setTargetPosition(lift_pos);
+                setTargetAng(lift_pos);
                 lift_flag = false;
             }
         }

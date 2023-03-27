@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+/*package org.firstinspires.ftc.teamcode;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
@@ -118,7 +118,7 @@ public class NewTele extends LinearOpMode {
                 } else if (Robot.servo.getPosition() < 0.9 && Robot.sensor.getVoltage() > 1 && sensor_sleep.milliseconds() > 500) {
                     Robot.servo.setPosition(1.);
                     led_flag = 2;
-                }*/
+                }*//*
                 last_sen = (Robot.sensor.getVoltage() > 1);
 
                 if (abs(y_el) > 0.05) new_thread.EL.Apply_Speed_for_Elevator(y_el);
@@ -142,14 +142,14 @@ public class NewTele extends LinearOpMode {
                 } else if (gamepad2.dpad_up) {
                     //y_ch = 0.85;
                     new_thread.EL.changeover.setPosition(0.955);
-                }*/
+                }*//*
                 double change_position = new_thread.EL.changeover.getPosition();
                 if (gamepad2.dpad_left || gamepad2.dpad_right || gamepad2.dpad_down || gamepad2.dpad_up) {
                     /*if (change_position < 0.5) {
                         new_thread.EL.changeover.setPosition(0.955);
                     } else {
                         new_thread.EL.changeover.setPosition(0.16);
-                    }*/
+                    }*//*
                     new_thread.change_per(0);
                 }
                 telemetry.addData("Lift Enc", new_thread.getPos());
@@ -168,3 +168,4 @@ public class NewTele extends LinearOpMode {
         new_thread.interrupt();
     }
 }
+*/

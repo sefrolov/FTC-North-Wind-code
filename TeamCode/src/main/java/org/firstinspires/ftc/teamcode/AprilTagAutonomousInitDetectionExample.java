@@ -17,8 +17,8 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- */
 
+*/
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -158,7 +158,7 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
          * during the init loop.
          */
 
-        /* Update the telemetry */
+        /* Update the telemetry *//*
         if(tagOfInterest != null)
         {
             telemetry.addLine("Tag snapshot:\n");

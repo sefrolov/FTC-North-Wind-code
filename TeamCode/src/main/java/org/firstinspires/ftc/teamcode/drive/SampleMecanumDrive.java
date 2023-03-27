@@ -21,6 +21,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -52,8 +53,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(6, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -73,6 +74,8 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
+
+    private double rightRear_last_encoder = 0, rightRear_last_encoder_normal = 0;
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -121,6 +124,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "motor_rb");
         rightFront = hardwareMap.get(DcMotorEx.class, "motor_rf");
 
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         for (DcMotorEx motor : motors) {
@@ -142,7 +148,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         // TODO: reverse any motors using DcMotor.setDirection()
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        //setLocalizer(new MecanumLocalizer());
+        setLocalizer(new MecanumLocalizer(this));
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
@@ -270,7 +276,23 @@ public class SampleMecanumDrive extends MecanumDrive {
     public List<Double> getWheelPositions() {
         List<Double> wheelPositions = new ArrayList<>();
         for (DcMotorEx motor : motors) {
-            wheelPositions.add(encoderTicksToInches(motor.getCurrentPosition()));
+
+            //wheelPositions.add(encoderTicksToInches(motor.getCurrentPosition()));
+
+            if (motor == rightRear){
+                if (motor.getCurrentPosition() > rightRear_last_encoder_normal){
+                    //rightRear_last_encoder += (motor.getCurrentPosition() - rightRear_last_encoder_normal) * 4.92;
+                    wheelPositions.add(encoderTicksToInches(rightRear_last_encoder));
+                }
+                else {
+                    rightRear_last_encoder += (motor.getCurrentPosition() - rightRear_last_encoder_normal);
+                    wheelPositions.add(encoderTicksToInches(rightRear_last_encoder));
+                }
+                rightRear_last_encoder_normal = motor.getCurrentPosition();
+            }
+            else{
+                wheelPositions.add(encoderTicksToInches(motor.getCurrentPosition()));
+            }
         }
         return wheelPositions;
     }

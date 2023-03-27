@@ -24,12 +24,13 @@ import java.util.Vector;
 
 @Autonomous
 public class Auto_4 extends LinearOpMode {
+
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         RobotNW Robot = new RobotNW();
         ElapsedTime timer = new ElapsedTime();
-        //elevatorThreadMiddle new_thread = new elevatorThreadMiddle();
+        elevatorNewThreadMiddle new_thread = new elevatorNewThreadMiddle();
         OpenCvCamera camera;
         AprilTagDetectionPipeline aprilTagDetectionPipeline;
         Robot.init(hardwareMap, telemetry, this);
@@ -41,7 +42,7 @@ public class Auto_4 extends LinearOpMode {
         double fy = 578.272;
         double cx = 402.145;
         double cy = 221.506;
-        double y = -6;
+        double y = 6;
         double x = -40;
         // UNITS ARE METERSa
         double tagsize = 0.166;
@@ -67,39 +68,57 @@ public class Auto_4 extends LinearOpMode {
             }
         });
 
-        Pose2d StartPose = new Pose2d(-62.5, 40, Math.toRadians(0));
-        /*new_thread.start();
-        new_thread.HM = hardwareMap;*/
-        /*Trajectory myTrajectorySpline = drive.trajectoryBuilder(StartPose)
-                .lineToSplineHeading(new Pose2d(-18, 50, Math.toRadians(0)))
-                .splineToSplineHeading(new Pose2d(-21, 37, Math.toRadians(45)), Math.toRadians(-135))
+        Pose2d StartPose = new Pose2d(-65, 36, Math.toRadians(0));
+        new_thread.HM = hardwareMap;
+        new_thread.init();
+
+        Trajectory myTrajectorySpline = drive.trajectoryBuilder(StartPose)
+                .lineToSplineHeading(new Pose2d(-32, 45, Math.toRadians(0)))
+                .splineToSplineHeading(new Pose2d(-5, 37.0, Math.toRadians(-45)), Math.toRadians(-45))
                 .build();
         Trajectory myTrajectorySpline2 = drive.trajectoryBuilder(myTrajectorySpline.end())
-                .splineToSplineHeading(new Pose2d(-17, 55, Math.toRadians(90)), Math.toRadians(90))
-                .lineToSplineHeading(new Pose2d(-17, 70, Math.toRadians(90)))
+                .splineToSplineHeading(new Pose2d(-11, 65, Math.toRadians(-90)), Math.toRadians(90))
+                .lineToSplineHeading(new Pose2d(-11, 85, Math.toRadians(-90)))
                 .build(); //стопка
         Trajectory myTrajectorySpline3 = drive.trajectoryBuilder(myTrajectorySpline2.end())
-                .lineToSplineHeading(new Pose2d(-19.75, 60, Math.toRadians(90)))
-                .splineToSplineHeading(new Pose2d(-22.5, 52, Math.toRadians(45)), Math.toRadians(-135))
+                .lineToSplineHeading(new Pose2d(-11, 70, Math.toRadians(-90)))
+                .splineToSplineHeading(new Pose2d(-21.5, 50, Math.toRadians(-135)), Math.toRadians(-135))
+                .build(); //2 дж
+        Trajectory myTrajectorySpline4 = drive.trajectoryBuilder(myTrajectorySpline3.end())
+                .splineToSplineHeading(new Pose2d(-14, 65, Math.toRadians(-90)), Math.toRadians(90))
+                .lineToSplineHeading(new Pose2d(-14, 97, Math.toRadians(-90)))
+                .build(); //стопка
+        /*Trajectory myTrajectorySpline5 = drive.trajectoryBuilder(myTrajectorySpline2.end())
+                .lineToSplineHeading(new Pose2d(-11, 70, Math.toRadians(-90)))
+                .splineToSplineHeading(new Pose2d(-21, 49, Math.toRadians(-135)), Math.toRadians(-135))
+                .build(); //2 дж
+        Trajectory myTrajectorySpline6 = drive.trajectoryBuilder(myTrajectorySpline3.end())
+                .splineToSplineHeading(new Pose2d(-12, 65, Math.toRadians(-90)), Math.toRadians(90))
+                .lineToSplineHeading(new Pose2d(-12, 90, Math.toRadians(-90)))
+                .build(); //стопка
+        /*
+        Trajectory myTrajectorySplineNew = drive.trajectoryBuilder(myTrajectorySpline.end())
+                .lineTo(new Vector2d(-22, 30.2))
+                .build();
+
+        Trajectory myTrajectorySplineNew1 = drive.trajectoryBuilder(myTrajectorySpline3.end())
+                .forward(1.5)
+                .build();
+
+        Trajectory myTrajectorySpline6 = drive.trajectoryBuilder(myTrajectorySplineNew1.end())
+                .lineToSplineHeading(new Pose2d(-19, 40, Math.toRadians(90)))
+                .build();*/
+
+        /*Trajectory myTrajectorySpline10 = drive.trajectoryBuilder(myTrajectorySpline.end())
+                //.lineToSplineHeading(new Pose2d(-10, 60, Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(-15, 50, Math.toRadians(-90)))
+                //.splineToSplineHeading(new Pose2d(-15, 48, Math.toRadians(-135)), Math.toRadians(-135))
                 .build(); //2 дж*/
 
-        /*Trajectory myTrajectorySpline4 = drive.trajectoryBuilder(myTrajectorySpline3.end())
-                .lineToSplineHeading(new Pose2d(-23, 40.8, Math.toRadians(130)))
-                .build(); //2 дж
-
-        Trajectory myTrajectorySpline45 = drive.trajectoryBuilder(myTrajectorySpline4.end())
-                .forward(4.25)
-                .build(); //2 дж
-        Trajectory myTrajectorySpline5 = drive.trajectoryBuilder(myTrajectorySpline4.end())
-                .lineToSplineHeading(new Pose2d(-17, 30, Math.toRadians(115)))
-                .build(); // проезд вперед к дж
-        Trajectory myTrajectorySpline6 = drive.trajectoryBuilder(myTrajectorySpline5.end())
-                .lineToSplineHeading(new Pose2d(-17, 29, Math.toRadians(90)))
-                .build(); // отъезд назад*/
         drive.setPoseEstimate(StartPose);
-        //new_thread.EL.Elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //new_thread.EL.Elevator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         telemetry.setMsTransmissionInterval(50);
+
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
             if (currentDetections.size() != 0) {
@@ -145,53 +164,133 @@ public class Auto_4 extends LinearOpMode {
         }
 
         if (tagOfInterest == null || tagOfInterest.id == LEFT) {
+            y = 92;
             telemetry.addLine("FIRST");
             telemetry.update();
-            y = 57;
         } else if (tagOfInterest.id == MIDDLE) {
+            y = 61;
             telemetry.addLine("SECOND");
             telemetry.update();
-            y = 42;
         } else {
+            y = 39;
             telemetry.addLine("THIRD");
             telemetry.update();
-            y = 18;
+
         }
+        Trajectory myTrajectorySpline61 = drive.trajectoryBuilder(myTrajectorySpline4.end())
+                .lineToSplineHeading(new Pose2d(-14, y, Math.toRadians(-90)))
+                .build();
 
-        Trajectory myTrajectorySpline70 = drive.trajectoryBuilder(StartPose)
-                .lineToSplineHeading(new Pose2d(-10, 40, Math.toRadians(90)))
-                .build(); //парковка
-        Trajectory myTrajectorySpline7 = drive.trajectoryBuilder(myTrajectorySpline70.end())
-                .lineToSplineHeading(new Pose2d(-10, y, Math.toRadians(90)))
-                .build(); //парковка
         waitForStart();
-        /*new_thread.EL.changeover.setPosition(0.88);
-        new_thread.change_per(2500);
-        timer.reset();
-        while (timer.milliseconds() < 100 && !isStopRequested());
-        new_thread.launch = true;
+        new_thread.start();
+        new_thread.setTargetAng(2080);
+        new_thread.EL.changeover.setPosition(0.96);
         drive.followTrajectory(myTrajectorySpline);
+        //telemetry.addData("parkovochka", y);
+        telemetry.update();
+        //new_thread.EL.changeover.setPosition(0.16);
 
+        // drive.followTrajectory(myTrajectorySplineNew);
         Robot.servo.setPosition(0.8);
-        //new_thread.change_per(1000);
+
+        timer.reset();
+        while (timer.milliseconds() < 200 && !isStopRequested());
+
+        new_thread.change_per(200);
+
+        //new_thread.launch1 = true;
+        new_thread.setTagetLiftAng_timer(800, 300);
+
+        //new_thread.launch1 = true;
+        drive.followTrajectory(myTrajectorySpline2);
+        //new_thread.launch1 = true;
+        new_thread.setTargetAng(270);
+        timer.reset();
+        while (timer.milliseconds() < 500 && !isStopRequested()) ;
+        Robot.servo.setPosition(1);
+
+
+        /*new_thread.launch2 = true;*/
         timer.reset();
         while (timer.milliseconds() < 500 && !isStopRequested());
+        new_thread.change_per(0);
+        new_thread.setTargetAng(1550);
+        drive.followTrajectory(myTrajectorySpline3);
+        Robot.servo.setPosition(0.8);
 
-        new_thread.launch1 = true;
-        drive.followTrajectory(myTrajectorySpline2);
         timer.reset();
-        while (timer.milliseconds() < 1500 && !isStopRequested()) ;
-        Robot.servo.setPosition(1.);
+        while (timer.milliseconds() < 200 && !isStopRequested());
+
+        new_thread.change_per(200);
+
+        //new_thread.launch1 = true;
+        new_thread.setTagetLiftAng_timer(800, 300);
+
+        //new_thread.launch1 = true;
+        drive.followTrajectory(myTrajectorySpline4);
+        //new_thread.launch1 = true;
+        new_thread.setTargetAng(220);
+        timer.reset();
+        while (timer.milliseconds() < 500 && !isStopRequested()) ;
+        Robot.servo.setPosition(1);
+
+        timer.reset();
+        while (timer.milliseconds() < 500 && !isStopRequested());
+        new_thread.change_per(0);
+        new_thread.setTargetAng(1550);
+        drive.followTrajectory(myTrajectorySpline3);
+        Robot.servo.setPosition(0.8);
+
+        timer.reset();
+        while (timer.milliseconds() < 200 && !isStopRequested());
+
+        new_thread.change_per(200);
+
+        //new_thread.launch1 = true;
+        new_thread.setTagetLiftAng_timer(800, 300);
+
+        //new_thread.launch1 = true;
+        drive.followTrajectory(myTrajectorySpline4);
+        //new_thread.launch1 = true;
+        new_thread.setTargetAng(100);
+        timer.reset();
+        while (timer.milliseconds() < 500 && !isStopRequested()) ;
+        Robot.servo.setPosition(1);
+        timer.reset();
+        while (timer.milliseconds() < 1000 && !isStopRequested()) ;
+
+        new_thread.setTargetAng(800);
+        new_thread.setTagetLiftAng_timer(0, 500);
+        drive.followTrajectory(myTrajectorySpline61);
+
+/*        drive.followTrajectory(myTrajectorySplineNew1);
+        Robot.servo.setPosition(0.8);
+        timer.reset();
+        while (timer.milliseconds() < 500 && !isStopRequested());
+        drive.followTrajectory(myTrajectorySpline6);
+        new_thread.change_per(500);
+        drive.followTrajectory(myTrajectorySpline61);
+
+        timer.reset();
+        while (timer.milliseconds() < 1000 && !isStopRequested());
+        /*new_thread.launch1 = true;
+        drive.followTrajectory(myTrajectorySpline21);
+        new_thread.EL.changeover.setPosition(0.89);
+        timer.reset();
+        while (timer.milliseconds() < 1700 && !isStopRequested()) ;
+       Robot.servo.setPosition(1.);
         new_thread.launch2 = true;
-        /*new_thread.change_per(3000);
+        new_thread.change_per(3500);
         timer.reset();
         while (timer.milliseconds() < 3000 && !isStopRequested()) ;
 
-        drive.followTrajectory(myTrajectorySpline3);
+        /*!!!после сорев сделать
+        drive.followTrajectory(myTrajectorySpline31);
+
         Robot.servo.setPosition(0.8);
         timer.reset();
-        while (timer.milliseconds() < 500 && !isStopRequested());
-*/
+        while (timer.milliseconds() < 500 && !isStopRequested());*/
+
         /*drive.followTrajectory(myTrajectorySpline5);
 
         new_thread.launch4 = true;
@@ -208,9 +307,8 @@ public class Auto_4 extends LinearOpMode {
         while (timer.milliseconds() < 750 && !isStopRequested());
         drive.followTrajectory(myTrajectorySpline7);*/
 
-        drive.followTrajectory(myTrajectorySpline70);
-        drive.followTrajectory(myTrajectorySpline7);
-        //new_thread.interrupt();
+
+        new_thread.interrupt();
     }
 
     void tagToTelemetry(AprilTagDetection detection) {
