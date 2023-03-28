@@ -75,7 +75,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
-    private double rightRear_last_encoder = 0, rightRear_last_encoder_normal = 0;
+    private static double rightRear_last_encoder = 0, rightRear_last_encoder_normal = 0;
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -281,11 +281,11 @@ public class SampleMecanumDrive extends MecanumDrive {
 
             if (motor == rightRear){
                 if (motor.getCurrentPosition() > rightRear_last_encoder_normal){
-                    //rightRear_last_encoder += (motor.getCurrentPosition() - rightRear_last_encoder_normal) * 4.92;
+                    rightRear_last_encoder += (motor.getCurrentPosition() - rightRear_last_encoder_normal) * 4.36/*4.92*/;
                     wheelPositions.add(encoderTicksToInches(rightRear_last_encoder));
                 }
                 else {
-                    rightRear_last_encoder += (motor.getCurrentPosition() - rightRear_last_encoder_normal);
+                    rightRear_last_encoder += (motor.getCurrentPosition() - rightRear_last_encoder_normal) * 1.455;
                     wheelPositions.add(encoderTicksToInches(rightRear_last_encoder));
                 }
                 rightRear_last_encoder_normal = motor.getCurrentPosition();
