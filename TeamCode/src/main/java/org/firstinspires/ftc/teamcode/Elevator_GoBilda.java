@@ -164,9 +164,9 @@ class elevatorNewThreadMiddle extends Thread {
     HardwareMap HM;
     Elevator_GoBilda EL = new Elevator_GoBilda();
     ElapsedTime timer = new ElapsedTime(), change_timer = new ElapsedTime(), lift_timer = new ElapsedTime();
-    boolean launch = false, launch1 = false, launch2 = false, launch3 = false, launch4 = false, launch5 = false, launch_end = false, lift_flag = false, change_flag = false;
-    int change_time = 0, lift_time = 0, lift_pos = 0;
-
+    boolean launch = false, ch_flag = false, launch1 = false, launch2 = false, launch3 = false, launch4 = false, launch5 = false, launch_end = false, lift_flag = false, change_flag = false;
+    int change_time = 0, lift_time = 0, lift_pos = 0, ch_time = 0;
+    double ch_pos = 0.;
     public void run() {
         //EL.initElevator(HM);
         while (!isInterrupted()) {
@@ -247,6 +247,11 @@ class elevatorNewThreadMiddle extends Thread {
                 change_flag = false;
             }
 
+            if (ch_flag && change_timer.milliseconds() > change_time && getPos() > 800){
+                EL.changeover.setPosition(ch_pos);
+                ch_flag = false;
+            }
+
             if (lift_flag && lift_timer.milliseconds() > lift_time){
                 setTargetAng(lift_pos);
                 lift_flag = false;
@@ -269,6 +274,13 @@ class elevatorNewThreadMiddle extends Thread {
         lift_time = time;
         lift_flag = true;
         lift_pos = pos;
+    }
+
+    void setTagetChangeAng_timer(double pos, int time){
+        change_timer.reset();
+        ch_time = time;
+        ch_flag = true;
+        ch_pos = pos;
     }
 
     public void addTargetAng(int Ang) {EL.addTargetAng(Ang);}

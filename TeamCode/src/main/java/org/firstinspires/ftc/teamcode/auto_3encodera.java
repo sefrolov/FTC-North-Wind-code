@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import static org.firstinspires.ftc.teamcode.AprilTagAutonomousInitDetectionExample.FEET_PER_METER;
 
+import static java.lang.Double.max;
+import static java.lang.Math.PI;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -20,10 +23,11 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 @Autonomous
-public class Auto_5_high extends LinearOpMode {
+public class auto_3encodera extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -67,55 +71,8 @@ public class Auto_5_high extends LinearOpMode {
 
             }
         });
-
-        Pose2d StartPose = new Pose2d(-66, 36, Math.toRadians(0));
         new_thread.HM = hardwareMap;
         new_thread.init();
-
-        Trajectory myTrajectorySpline = drive.trajectoryBuilder(StartPose)
-                .lineToSplineHeading(new Pose2d(-40, 42, Math.toRadians(0)))
-                .splineToSplineHeading(new Pose2d(-30, 37.0, Math.toRadians(-45)), Math.toRadians(-45))
-                .build();
-        Trajectory myTrajectorySpline2 = drive.trajectoryBuilder(myTrajectorySpline.end())
-                .splineToSplineHeading(new Pose2d(-30, 55, Math.toRadians(-90)), Math.toRadians(90))
-                .lineToSplineHeading(new Pose2d(-30, 60, Math.toRadians(-90)))
-                .build(); //стопка
-        Trajectory myTrajectorySpline3 = drive.trajectoryBuilder(myTrajectorySpline2.end())
-                .lineToSplineHeading(new Pose2d(-13, 60, Math.toRadians(-90)))
-                .splineToSplineHeading(new Pose2d(-10, 48, Math.toRadians(-45)), Math.toRadians(-45))
-                .build(); //2 дж
-        Trajectory myTrajectorySpline4 = drive.trajectoryBuilder(myTrajectorySpline3.end())
-                .splineToSplineHeading(new Pose2d(-13, 70, Math.toRadians(-90)), Math.toRadians(90))
-                .lineToSplineHeading(new Pose2d(-13, 77, Math.toRadians(-90)))
-                .build(); //стопка
-        Trajectory myTrajectorySpline5 = drive.trajectoryBuilder(myTrajectorySpline4.end())
-                .lineToSplineHeading(new Pose2d(-21, 70, Math.toRadians(-90)))
-                .splineToSplineHeading(new Pose2d(-18, 49, Math.toRadians(-45)), Math.toRadians(-45))
-                .build(); //3 дж
-        Trajectory myTrajectorySpline6 = drive.trajectoryBuilder(myTrajectorySpline5.end())
-                .splineToSplineHeading(new Pose2d(-25, 65, Math.toRadians(-90)), Math.toRadians(90))
-                .lineToSplineHeading(new Pose2d(-25, 90, Math.toRadians(-90)))
-                .build(); //стопка
-        /*
-        Trajectory myTrajectorySplineNew = drive.trajectoryBuilder(myTrajectorySpline.end())
-                .lineTo(new Vector2d(-22, 30.2))
-                .build();
-
-        Trajectory myTrajectorySplineNew1 = drive.trajectoryBuilder(myTrajectorySpline3.end())
-                .forward(1.5)
-                .build();
-
-        Trajectory myTrajectorySpline6 = drive.trajectoryBuilder(myTrajectorySplineNew1.end())
-                .lineToSplineHeading(new Pose2d(-19, 40, Math.toRadians(90)))
-                .build();*/
-
-        /*Trajectory myTrajectorySpline10 = drive.trajectoryBuilder(myTrajectorySpline.end())
-                //.lineToSplineHeading(new Pose2d(-10, 60, Math.toRadians(-90)))
-                .lineToSplineHeading(new Pose2d(-15, 50, Math.toRadians(-90)))
-                //.splineToSplineHeading(new Pose2d(-15, 48, Math.toRadians(-135)), Math.toRadians(-135))
-                .build(); //2 дж*/
-
-        drive.setPoseEstimate(StartPose);
 
         telemetry.setMsTransmissionInterval(50);
 
@@ -163,93 +120,99 @@ public class Auto_5_high extends LinearOpMode {
             telemetry.update();
         }
 
-        if (tagOfInterest == null || tagOfInterest.id == LEFT) {
-            y = 92;
-            telemetry.addLine("FIRST");
-            telemetry.update();
-        } else if (tagOfInterest.id == MIDDLE) {
-            y = 61;
-            telemetry.addLine("SECOND");
-            telemetry.update();
-        } else {
-            y = 39;
-            telemetry.addLine("THIRD");
-            telemetry.update();
 
-        }
-        Trajectory myTrajectorySpline61 = drive.trajectoryBuilder(myTrajectorySpline6.end())
-                .lineToSplineHeading(new Pose2d(-25, y, Math.toRadians(-90)))
-                .build();
 
         waitForStart();
         new_thread.start();
         new_thread.setTargetAng(2080);
         new_thread.EL.changeover.setPosition(0.96);
-        drive.followTrajectory(myTrajectorySpline);
+        while (Robot.WB.MotorLF.getCurrentPosition() < 1200){
+            Robot.WB.applySpeed(0, max(1., (Robot.WB.MotorLF.getCurrentPosition() - 1200) / 400.), 0, 1.5);
+        };
+        /*telemetry.addData("lf", Robot.WB.MotorLF.getCurrentPosition());
+        telemetry.update();*/
+        Robot.WB.applyBreak();
+        timer.reset();
+        while (timer.milliseconds() < 500 && !isStopRequested());
+        Robot.WB.applySpeed(1,0.4,0, 1.5);
+        while (Robot.WB.MotorLF.getCurrentPosition() >= 1200 && Robot.WB.MotorLF.getCurrentPosition() < 2100){
+            Robot.WB.applySpeed(1,0.3,0, 1.5);
+        }
+        Robot.WB.applyBreak();
+        while (Robot.IMU.getAngle() > 0) {
+            Robot.WB.applySpeed(0, 0, 0.2, 1);
+            telemetry.addData("imu", Robot.IMU.getAngle());
+            telemetry.update();
+
+        }
+        Robot.WB.applyBreak();
+        Robot.servo.setPosition(0.8);
+
+        timer.reset();
+        while (timer.milliseconds() < 1500 && !isStopRequested());
+
+        new_thread.change_per(100);
+        new_thread.setTargetAng(800);
+
+        while (Robot.WB.MotorLF.getCurrentPosition() > 2225){
+            Robot.WB.applySpeed(0, -1, 0, 3);
+        };
+        Robot.WB.applyBreak();
+        timer.reset();
+        while (timer.milliseconds() < 500 && !isStopRequested()) {
+            Robot.WB.applyBreak();
+        }
+        while (Robot.IMU.getAngle() > -0.46 * PI) {
+            Robot.WB.applySpeed(0, 0, 0.52 * PI + Robot.IMU.getAngle(), 2);
+            telemetry.addData("imu", Robot.IMU.getAngle());
+            telemetry.update();
+        }
+        Robot.WB.applyBreak();
+        timer.reset();
+        while (timer.milliseconds() < 100 && !isStopRequested());
+        /*List<Double> pos = drive.getWheelPositions();
+        telemetry.addData("motor_lf", pos.get(0));
+        //telemetry.update();*/
+        double n = Robot.WB.MotorLF.getCurrentPosition();
+        telemetry.addData("lf", Robot.WB.MotorLF.getCurrentPosition());
+        telemetry.addData("n", n);
         telemetry.update();
 
-        Robot.servo.setPosition(0.8);
-
-        timer.reset();
-        while (timer.milliseconds() < 200 && !isStopRequested());
-
-        new_thread.change_per(200);
-
-        new_thread.setTagetLiftAng_timer(800, 300);
-
-        drive.followTrajectory(myTrajectorySpline2);
+      //  double n = Robot.WB.MotorLF.getCurrentPosition();
+      Robot.WB.applySpeed(0, -1, 0, 2.5);
+        while ((n - Robot.WB.MotorLF.getCurrentPosition()) < 1300){
+            Robot.WB.applySpeed(0, -1, 0, 2.5);
+        }
+        Robot.WB.applyBreak();
         new_thread.setTargetAng(270);
         timer.reset();
-       /* while (timer.milliseconds() < 200 && !isStopRequested()) ;
+        while (timer.milliseconds() < 200 && !isStopRequested());
         Robot.servo.setPosition(1);
-
-
         timer.reset();
         while (timer.milliseconds() < 200 && !isStopRequested());
-        new_thread.change_per(0);
         new_thread.setTargetAng(2080);
-        drive.followTrajectory(myTrajectorySpline3);
-        Robot.servo.setPosition(0.8);
+        new_thread.setTagetChangeAng_timer(0.5, 0);
+        n = Robot.WB.MotorLF.getCurrentPosition();
+        while ((n - Robot.WB.MotorLF.getCurrentPosition()) > -800){
+            Robot.WB.applySpeed(-0.4, max(1, (1000 + n - Robot.WB.MotorLF.getCurrentPosition()) / 300), 0, 1.5);
+        }
 
-        timer.reset();
-        while (timer.milliseconds() < 200 && !isStopRequested());
 
-        new_thread.change_per(200);
 
-        new_thread.setTagetLiftAng_timer(750, 300);
+        if (tagOfInterest == null || tagOfInterest.id == LEFT) {
+            //y = 92;
+            telemetry.addLine("FIRST");
+            telemetry.update();
+        } else if (tagOfInterest.id == MIDDLE) {
+            //y = 61;
+            telemetry.addLine("SECOND");
+            telemetry.update();
+        } else {
+            //y = 39;
+            telemetry.addLine("THIRD");
+            telemetry.update();
 
-        drive.followTrajectory(myTrajectorySpline4);
-        new_thread.setTargetAng(220);
-        timer.reset();
-        while (timer.milliseconds() < 200 && !isStopRequested()) ;
-        Robot.servo.setPosition(1);
-
-        /*timer.reset();
-        while (timer.milliseconds() < 200 && !isStopRequested());
-        new_thread.change_per(0);
-        new_thread.setTargetAng(2080);
-        drive.followTrajectory(myTrajectorySpline5);
-        Robot.servo.setPosition(0.8);
-
-        timer.reset();
-        while (timer.milliseconds() < 200 && !isStopRequested());
-
-        new_thread.change_per(200);
-
-        new_thread.setTagetLiftAng_timer(700, 300);
-
-        drive.followTrajectory(myTrajectorySpline6);
-        new_thread.setTargetAng(170);
-        timer.reset();
-        while (timer.milliseconds() < 200 && !isStopRequested()) ;
-        Robot.servo.setPosition(1);
-        timer.reset();
-        while (timer.milliseconds() < 200 && !isStopRequested()) ;
-
-        new_thread.setTargetAng(800);
-        new_thread.setTagetLiftAng_timer(0, 500);
-        drive.followTrajectory(myTrajectorySpline61);*/
-
+        }
         new_thread.interrupt();
     }
 
